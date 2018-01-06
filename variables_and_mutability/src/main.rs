@@ -3,6 +3,8 @@ struct Structure
     attribute: u8,
 }
 
+/* variables cannot be declared into the global scope */
+
 fn main() {
 
     /* this variable is immutable */
