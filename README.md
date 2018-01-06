@@ -21,6 +21,7 @@ cargo run
 - [Scalar types](#scalar-types)
 - [Compound types](#compound-types)
 - [Statements and expressions](#statements-and-expressions)
+- [Ownership](#ownership)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -102,3 +103,110 @@ an `expression` is a code instruction that returns a value,
 * statements contains expressions, expressions are defined with blocks (`{}`),
 * expression that returns nothing return an unit type (`()`) (counterpart of `void` in C),
 * statements end with a semicolon, expressions have no semicolon at the end
+
+## Ownership
+Check the project `ownership`.
+
+### The rules of ownership
+
+The three rules of ownership in Rust:
+
+```
+- Each value in Rust has a variable that’s called its owner.
+- There can only be one owner at a time.
+- When the owner goes out of scope, the value will be dropped.
+```
+
+### Move semantics
+
+The following situation happens to objects
+that are allocated on the heap memory.
+
+```rust
+let text = String::from("my content");
+let other_text = text;
+
+// "text" is not callable anymore, its stack part has been copied
+// into an "other_text" variable, the heap part is unchanged,
+// the previous stack part ("text") cannot be accessed anymore
+```
+
+In the example above, a `String` is allocated on the heap.
+Meta-data of the string is allocated on the stack,
+including a pointer to the heap allocation.
+
+When `other_text` is declared from `text`, the stack part of the object
+is copied and is now accessible through `other_text`.
+The heap allocated data is not affected.
+
+![Image 1](images/ownership_1.png)
+
+As a value can only have one owner at a time, `other_text` becomes the owner
+and `text` cannot be used anymore.
+
+![Image 2](images/ownership_2.png)
+
+### Copy instead of move
+
+The following situation happens to objects
+that are allocated on the heap memory.
+
+```rust
+let text = String::from("my content");
+let other_text = text.clone();
+```
+
+In the example above, both of the stack and heap memory
+is copied and a brand new variable is created.
+Both `text` and `other_text` are accessible within the context.
+
+### `Copy` trait
+
+Most of the types that do not require to set any data on the heap memory
+(and that only live on the stack memory) generally implement the `Copy` trait.
+
+This trait makes the variables from those types to be copied by default.
+This is the case for all the scalar types.
+
+```rust
+let x = 5;
+let y = x;
+println!("{}", x); // 5
+println!("{}", y); // 0
+```
+
+### Function call
+
+Exactly the same situation happens when a variable is passed to function.
+If the variable has heap memory allocation, the variable is moved and won't
+be accessible anymore from the client scope.
+If the variable has stack memory allocation only, the variable is copied
+(if it implements the `Copy` trait).
+
+```rust
+fn function(value: String)
+{
+    println!("{}", value);
+}
+
+fn main()
+{
+    let value = String::from("my value");
+    function(value);
+    println!("{}", value); // error: value has been moved
+}
+```
+
+```rust
+fn function(value: i32)
+{
+    println!("{}", value);
+}
+
+fn main()
+{
+    let value = 50;
+    function(value);
+    println!("{}", value); // no error
+}
+```
