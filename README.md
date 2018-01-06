@@ -20,6 +20,7 @@ cargo run
 - [Shadowing](#shadowing)
 - [Scalar types](#scalar-types)
 - [Compound types](#compound-types)
+- [Statements and expressions](#statements-and-expressions)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -90,3 +91,14 @@ To remember:
 * arrays and tuples are affected by mutability and the `mut` keyword
 * arrays are simple chunks of memory allocated on the stack,
 * arrays and tuples have a fixed size, on arrays, that size may be implicit or explicit
+
+## Statements and expressions
+Check the project `statements_and_expressions`.
+
+To remember:
+* a `statement` is a code instruction that does not return a value,
+an `expression` is a code instruction that returns a value,
+* declaring a variable with `let` is a statement, defining a function is also a statement,
+* statements contains expressions, expressions are defined with blocks (`{}`),
+* expression that returns nothing return an unit type (`()`) (counterpart of `void` in C),
+* statements end with a semicolon, expressions have no semicolon at the end
