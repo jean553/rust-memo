@@ -17,6 +17,7 @@ cargo run
 ## Table of contents
 - [Variables and mutability](#variables-and-mutability)
 - [Constants](#constants)
+- [Shadowing](#shadowing)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -47,3 +48,14 @@ Benefits:
 * give an explicit name to raw values instead of losing insignificant digits, strings... in the code,
 * you only need to modify the constant declaration value in order to modify its value everywhere it is used,
 * explicitly calculate a value at compilation-time and not at runtime
+
+## Shadowing
+Check the project `shadowing`.
+
+To remember:
+* "shadow" a variable means create another variable with the same name, calling this name means getting the second variable value,
+* shadowing can be performed with totally different types between the shadowed variables
+
+Benefits:
+* stop variables mutability (or start variables mutability),
+* limit the amount of variables
