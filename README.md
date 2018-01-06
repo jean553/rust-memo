@@ -19,6 +19,7 @@ cargo run
 - [Constants](#constants)
 - [Shadowing](#shadowing)
 - [Scalar types](#scalar-types)
+- [Compound types](#compound-types)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -77,3 +78,15 @@ f32 has a single precision, f64 has a double precision,
 
 Benefits:
 * "usize" gives the guarantee to be always good enough to hold any pointer
+
+## Compound types
+Check the project `compound_points`.
+
+To remember:
+* there are two compound types: tuples and arrays,
+* a tuple can have different data types, an array cannot have different data types,
+* a tuple types can be implicit or explicit,
+* array items are accessed using `array[index]` notation, tuples items are accessed using `tuple.index` notation,
+* arrays and tuples are affected by mutability and the `mut` keyword
+* arrays are simple chunks of memory allocated on the stack,
+* arrays and tuples have a fixed size, on arrays, that size may be implicit or explicit
