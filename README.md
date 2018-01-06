@@ -16,9 +16,34 @@ cargo run
 
 ## Table of contents
 - [Variables and mutability](#variables-and-mutability)
+- [Constants](#constants)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
 
 To remember:
 * every variable is immutable by default, declare them with `mut` to make them mutable,
+* if an object is immutable, that means all its attributes are immutable,
+* if an array is immutable, that means all its items are immutable,
+* variables declared with `let` cannot be declared into the global scope
+
+Benefits:
+* you know what variable might be modified or not,
+* by default, a variable cannot be modified, it prevents bad surprises
+if a part of the program accidently tries to change the variable,
+especially when using multiple threads.
+
+## Constants
+Check the project `constants`.
+
+To remember:
+* when declaring a constant, the data type is mandatory,
+* a constant is computed at compilation, so Rust must be able to deduce its value during the compilation,
+* a constant can be declared as global,
+* a constant can be built from raw values, from another constant, from `const fn` functions,
+* `const fn` functions are evaluated at compilation time and cannot declare `let` variables
+
+Benefits:
+* give an explicit name to raw values instead of losing insignificant digits, strings... in the code,
+* you only need to modify the constant declaration value in order to modify its value everywhere it is used,
+* explicitly calculate a value at compilation-time and not at runtime
