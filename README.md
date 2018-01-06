@@ -18,6 +18,7 @@ cargo run
 - [Variables and mutability](#variables-and-mutability)
 - [Constants](#constants)
 - [Shadowing](#shadowing)
+- [Scalar types](#scalar-types)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -59,3 +60,20 @@ To remember:
 Benefits:
 * stop variables mutability (or start variables mutability),
 * limit the amount of variables
+
+## Scalar types
+Check the project `scalar_types`.
+
+To remember:
+* "scalar" types are integers (u8, i8, u16, i16, u32, i32, u64, i64, usize, isize),
+floating-point numbers (f32, f64), booleans (bool) and characters,
+* "usize" and "isize" size depends of the architecture (32 bits long or 64 bits long),
+* if the type is not specified when declaring an integer variable, the default type is `i32`,
+(BEWARE: Rust does not switch to i64/u64 if the value is too high for i32,
+it adapts it in order to store it into the i32, a warning is raised though)
+* f32 and f64 use IEEE-754 standard (https://en.wikipedia.org/wiki/IEEE_754),
+f32 has a single precision, f64 has a double precision,
+* char is four bytes long, and can store any unicode scalar value (http://www.unicode.org/glossary/#unicode_scalar_value),
+
+Benefits:
+* "usize" gives the guarantee to be always good enough to hold any pointer
