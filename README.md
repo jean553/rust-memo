@@ -80,7 +80,7 @@ Benefits:
 * "usize" gives the guarantee to be always good enough to hold any pointer
 
 ## Compound types
-Check the project `compound_points`.
+Check the project `compound_types`.
 
 To remember:
 * there are two compound types: tuples and arrays,
