@@ -27,6 +27,12 @@ cargo run
     * [Copy instead of move](#copy-instead-of-move)
     * [`Copy` trait](#copy-trait)
     * [Function call](#function-call)
+- [References](#references)
+    * [The rules for references](#the-rules-for-references)
+    * [Mutable reference](#mutable-reference)
+    * [Immutable reference](#immutable-reference)
+    * [Invalid references](#invalid-references)
+    * [Borrowing](#borrowing)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -214,4 +220,83 @@ fn main()
     function(value);
     println!("{}", value); // no error
 }
+```
+
+## References
+
+The Rust rules about references are:
+
+### The rules for references
+
+```
+At any given time, you can have either but not both of:
+* One mutable reference.
+* Any number of immutable references.
+
+References must always be valid.
+```
+
+Benefits:
+* Only the owner of a variable can modify its value,
+* If the variable is borrowed by a reference, only one borrowing reference can modify its value,
+* Safety along ownership and borrowing ensures that only one variable access can modify it at a time (multi-threading)
+
+### Mutable reference
+
+A variable can have exactly one mutable reference.
+
+```rust
+let mut variable = String::from("one string");
+let reference = &mut variable;
+```
+
+### Immutable reference
+
+A variable can have many immutable references.
+
+```rust
+let variable = String::from("one string");
+let reference = &variable;
+let other_reference = &variable;
+```
+
+### Invalid references
+
+This causes a compilation error. This happens when the variable
+goes out of the scope before its reference.
+
+```rust
+let variable = String::from("one string");
+let mut reference = &variable; // "reference" is a reference to "variable"
+
+let other_variable = String::from("other string");
+reference = &other_variable; // "reference" is a reference to "other_variable"
+
+// "other_variable" goes out of the scope before the others variables;
+// at this moment, "reference" is still its reference, so there is an error.
+```
+
+### Borrowing
+
+When a variable is borrowed by a reference, only the reference can access it until the reference goes out of the scope.
+
+```rust
+let mut variable = Structure {
+    value: 10,
+};
+let reference = &mut variable;
+variable.value = 20; // error: "variable" is borrowed by "reference"
+```
+
+```rust
+let mut variable = Structure {
+    value: 10,
+};
+
+{
+    let reference = &mut variable;
+    reference.value = 20;
+}
+
+variable.value = 30; // works well a "reference" does not borrow "variable" anymore
 ```
