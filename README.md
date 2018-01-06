@@ -22,6 +22,11 @@ cargo run
 - [Compound types](#compound-types)
 - [Statements and expressions](#statements-and-expressions)
 - [Ownership](#ownership)
+    * [The rules of ownership](#the-rules-of-ownership)
+    * [Move semantics](#move-semantics)
+    * [Copy instead of move](#copy-instead-of-move)
+    * [`Copy` trait](#copy-trait)
+    * [Function call](#function-call)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
