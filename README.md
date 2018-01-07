@@ -646,6 +646,7 @@ A `static` variable can be mutable; in that case, any access might be concurrent
 (multiple threads), so access must be performed into an `unsafe` block.
 
 ## Generic types
+(check the project `generic_types`)
 
 This is possible to define generic types that can be replaced by any real type (scalar or compound).
 
