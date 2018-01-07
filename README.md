@@ -46,6 +46,7 @@ cargo run
     * [Generic types on structures](#generic-types-on-structures)
     * [Generic types on implementations](#generic-types-on-implementations)
     * [Generic types with enumerations](#generic-types-with-enumerations)
+- [Trait bounds](#trait-bounds)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -776,4 +777,47 @@ let value: MyEnumeration<u32> = MyEnumeration::SecondValue(10);
 
 /* can be implicit if the first set value is the generic type one */
 let value = MyEnumeration::FirstValue(false);
+```
+
+## Trait bounds
+(check projet `trait_bounds`)
+
+When passing generic data type to a function, this is possible to specify
+that the passed type must implement some given traits.
+
+```rust
+fn function<T, U>(
+    first: T,
+    second: U,
+) -> bool
+    where T: MyTrait + Clone,
+          U: MyTrait
+{
+    ...
+}
+```
+
+In the example above, `first` must have a type that implements `MyTrait` and `Clone`,
+`second` must have a type that implements `MyTrait`.
+
+This is also possible to apply trait bounds at the implementation level.
+For example:
+
+```rust
+struct Structure<T> {
+    value: T,
+}
+
+impl<T: Clone> Structure<T> {
+
+    pub fn function(&self) {
+        println!("some text...");
+    }
+}
+
+let object = Structure {
+    value: 10 as u32, // u32 is T, it implements Clone
+};
+
+object.function(); // function() is callable as T implements Clone
 ```
