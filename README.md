@@ -40,6 +40,7 @@ cargo run
     * [References lifetimes into structures](#references-lifetimes-into-structures)
     * [References lifetimes into implementations](#references-lifetimes-into-implementations)
     * [`'static` lifetime](#static-lifetime)
+- [`const` vs `static`](#const-vs-static)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -309,6 +310,7 @@ variable.value = 30; // works well a "reference" does not borrow "variable" anym
 ```
 
 ## Lifetimes
+(check the `lifetimes` example)
 
 ### Concept
 
@@ -628,3 +630,12 @@ fn main() {
     let second: &'static str = "String that is stored into the code itself, String object can be created from it";
 }
 ```
+
+## `const` vs `static`
+(check the `const_vs_static` example)
+
+`const` is a value that only exists into the executed binary,
+`static` is a variable that really exists in memory for the entire program execution
+
+A `static` variable can be mutable; in that case, any access might be concurrent
+(multiple threads), so access must be performed into an `unsafe` block.
