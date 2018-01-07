@@ -47,6 +47,7 @@ cargo run
     * [Generic types on implementations](#generic-types-on-implementations)
     * [Generic types with enumerations](#generic-types-with-enumerations)
 - [Trait bounds](#trait-bounds)
+- [Closures](#closures)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -821,3 +822,6 @@ let object = Structure {
 
 object.function(); // function() is callable as T implements Clone
 ```
+
+## Closures
+(check the `closures` project)
