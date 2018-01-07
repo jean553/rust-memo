@@ -17,6 +17,31 @@ fn get_highest<'a, 'b>(
     }
 }
 
+fn get_one_reference<'a>(
+    first: &'a i32,
+    second: &i32,
+) -> &'a i32
+{
+    first
+}
+
+struct MyStructure<'a> {
+    reference: &'a i32,
+    other_reference: &'a i32,
+}
+
+impl<'a> MyStructure<'a> {
+
+    pub fn get_reference(&self) -> &'a i32 {
+
+        if (true) {
+            self.other_reference
+        } else {
+            self.reference
+        }
+    }
+}
+
 fn main() {
 
     /* error occurs if the reference lifetime is higher than its value */
@@ -58,4 +83,27 @@ fn main() {
         first_reference,
         second_reference,
     );
+
+    /* get_one_reference always return a reference of the same lifetime
+       than "first", so for sure "reference" will always have the appropriate lifetime */
+    let first = 10;
+    let mut reference;
+    {
+        let second = 20;
+        reference = get_one_reference(
+            &first,
+            &second,
+        );
+    }
+
+    let value = 10;
+    let other_value = 20;
+    let mut object = MyStructure {
+        reference: &value,
+        other_reference: &other_value,
+    };
+    {
+        let other_value = 20;
+        // error: "other_value" does not live long enough:  object.reference = &other_value;
+    }
 }

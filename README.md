@@ -36,7 +36,9 @@ cargo run
 - [Lifetimes](#lifetimes)
     * [Concept](#concept)
     * [The problem](#the-problem)
-    * [Reference lifetimes into functions declarations](#reference-lifetimes-into-functions-declarations)
+    * [References lifetimes into functions declarations](#references-lifetimes-into-functions-declarations)
+    * [References lifetimes into structures](#references-lifetimes-into-structures)
+    * [References lifetimes into implementations](#references-lifetimes-into-implementations)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -517,3 +519,94 @@ and the returned reference has a `'a` lifetime, so this code cannot compile.
 
 References explicit lifetimes are not a kind of syntax rule to respect but more "an additional
 information to add to the code in order to ensure that you know what you are doing".
+
+Meanwhile, if the function returns for sure always the same reference,
+there is no need to attribute reference lifetimes to other parameters:
+
+```rust
+fn get_reference<'a>(
+    first: &'a i32,
+    second: &i32,
+) -> &'a i32
+{
+    first
+}
+```
+
+In the example above, the `second` parameter is never returned,
+so there is no need to indicate its lifetime.
+
+### References lifetimes into structures
+
+It is possible to store references into structures.
+In that case, it is required for the reference to have a lifetime.
+The name of the lifetime has to be declared as the same way as for a function.
+
+```rust
+struct MyStructure<'a> {
+    reference: &'a i32,
+}
+```
+
+For example, the following code does not compile as "other_value" lifetime
+is not the same as the one used when the object has been created with "value" lifetime.
+
+```rust
+let value = 10;
+let object = MyStructure {
+    reference: &value,
+};
+{
+    let other_value = 20;
+    object.reference = &other_value;
+}
+```
+
+### References lifetimes into implementations
+
+Lifetimes can (or must) be used into implementations.
+If the structure of the implementation used a lifetime,
+then this is required to specify the lifetime when indicating the structure.
+As the structure uses a lifetime, this is also require to declare it with 'impl'.
+
+Example:
+
+```rust
+impl<'a> MyStructure<'a> {
+}
+```
+
+It is then possible to indicate the reference lifetime into the method definition:
+
+```rust
+impl<'a> MyStructure<'a> {
+
+    pub fn get_reference(&'a self) -> &'a i32 {
+        self.reference
+    }
+}
+```
+
+As the same way, reference lifetimes into structures gives information about the returned references:
+
+```rust
+struct<'a> Structure<'a> {
+    first_reference: &'a i32,
+    second_reference: &'a i32,
+}
+
+impl<'a> Structure<'a> {
+
+    pub fn get_reference(&self) -> &'a i32 {
+
+        if (true) {
+            first_reference
+        } else {
+            second_reference
+        }
+    }
+}
+```
+
+The code above can only compile if the references set for "first_reference" and "second_reference"
+have the same lifetime.
