@@ -39,6 +39,7 @@ cargo run
     * [References lifetimes into functions declarations](#references-lifetimes-into-functions-declarations)
     * [References lifetimes into structures](#references-lifetimes-into-structures)
     * [References lifetimes into implementations](#references-lifetimes-into-implementations)
+    * [`'static` lifetime](#static-lifetime)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -610,3 +611,20 @@ impl<'a> Structure<'a> {
 
 The code above can only compile if the references set for "first_reference" and "second_reference"
 have the same lifetime.
+
+### `'static` lifetime
+
+The `'static` lifetime refers to a variable that exists for the entire program execution.
+`'static` is the longest lifetime that exists in Rust.
+
+Example:
+
+```rust
+const VALUE: i32 = 10;
+
+fn main() {
+
+    let first: &'static i32 = &VALUE;
+    let second: &'static str = "String that is stored into the code itself, String object can be created from it";
+}
+```

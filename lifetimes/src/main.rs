@@ -96,6 +96,9 @@ fn main() {
         );
     }
 
+    /* if structure attributes references have the same lifetime,
+       then trying to set references with different lifetimes
+       results into an error */
     let value = 10;
     let other_value = 20;
     let mut object = MyStructure {
@@ -106,4 +109,9 @@ fn main() {
         let other_value = 20;
         // error: "other_value" does not live long enough:  object.reference = &other_value;
     }
+
+    /* 'static lifetime cannot be used on a variable that does not live the entire program
+       execution */
+    let value = 10;
+    // error: value does not live for the entire program execution: let reference: &'static i32 = &value;
 }
