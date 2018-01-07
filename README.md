@@ -41,6 +41,11 @@ cargo run
     * [References lifetimes into implementations](#references-lifetimes-into-implementations)
     * [`'static` lifetime](#static-lifetime)
 - [`const` vs `static`](#const-vs-static)
+- [Generic types](#generic-types)
+    * [Generic types on functions](#generic-types-on-functions)
+    * [Generic types on structures](#generic-types-on-structures)
+    * [Generic types on implementations](#generic-types-on-implementations)
+    * [Generic types with enumerations](#generic-types-with-enumerations)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -639,3 +644,135 @@ fn main() {
 
 A `static` variable can be mutable; in that case, any access might be concurrent
 (multiple threads), so access must be performed into an `unsafe` block.
+
+## Generic types
+
+This is possible to define generic types that can be replaced by any real type (scalar or compound).
+
+### Generic types on functions
+
+Example:
+
+```rust
+fn get_result<T>(
+    choice: bool,
+    first: T,
+    second: T,
+) -> T
+{
+    if choice {
+        first
+    } else {
+        second
+    }
+}
+
+fn main() {
+
+    let result = get_result(true, 2, 5); // 7
+    let float_result = get_result(false, 2.0, 5.0); // 7.0
+}
+```
+
+### Generic types on structures
+
+Example:
+
+```rust
+struct MyStructure<T> {
+    value: T,
+    other_value: bool,
+}
+
+fn main() {
+
+    let object = Structure {
+        value: 10,
+        other_value: true,
+    };
+
+    let other_object = Structure {
+        value: false,
+        other_value: false,
+    };
+}
+```
+
+### Generic types on implementations
+
+Example:
+
+```rust
+struct MyStructure<T> {
+    value: T,
+}
+
+impl<T> MyStructure<T> {
+
+    pub fn get_value(&self) -> &T {
+        &self.value
+    }
+}
+
+fn main() {
+    
+    let object = MyStructure {
+        value: 10,
+    };
+    let reference: &u8 = object.get_value(); 
+}
+```
+
+Different implementations can be defined for the same structure.
+The structure attributes types define what implementation to use.
+
+```rust
+struct MyStructure<T, U> {
+    first: T,
+    second: U,
+}
+
+impl MyStructure<u32, bool> {
+
+    pub fn get(&self) -> &u32 {
+        &self.first
+    }
+}
+
+impl MyStructure<bool, u32> {
+
+    pub fn get(&self) -> u32 {
+        &self.second
+    }
+}
+
+let object = MyStructure {
+    first: 10 as u32,
+    second: false,
+};
+println!("{}", object.get()); // 10
+
+let other_object = MyStructure {
+    first: false,
+    second: 15 as u32,
+};
+println!("{}", object.get()); // 15
+```
+
+### Generic types with enumerations
+
+This is possible to use generic types with enumerations.
+
+```rust
+enum MyEnumeration<T> {
+    FirstValue(T),
+    SecondValue(u32),
+    None,
+}
+
+/* must be explicit if the first set value is not the generic type one */
+let value: MyEnumeration<u32> = MyEnumeration::SecondValue(10);
+
+/* can be implicit if the first set value is the generic type one */
+let value = MyEnumeration::FirstValue(false);
+```
