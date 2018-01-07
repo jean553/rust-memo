@@ -33,6 +33,10 @@ cargo run
     * [Immutable reference](#immutable-reference)
     * [Invalid references](#invalid-references)
     * [Borrowing](#borrowing)
+- [Lifetimes](#lifetimes)
+    * [Concept](#concept)
+    * [The problem](#the-problem)
+    * [Reference lifetimes into functions declarations](#reference-lifetimes-into-functions-declarations)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -300,3 +304,216 @@ let mut variable = Structure {
 
 variable.value = 30; // works well a "reference" does not borrow "variable" anymore
 ```
+
+## Lifetimes
+
+### Concept
+
+Using Rust, every variable and reference has a lifetime.
+The lifetime determines how long a variable/reference exists.
+
+```rust
+{
+    let value = 10; // lifetime of "value" starts here
+
+    /* ... */
+
+    let other_value = 20; // lifetime of "other_value" starts here
+
+    /* ... */
+
+    {
+        let other_reference = &value; // lifetime of "other_reference" starts here
+
+        /* ... */
+
+        // lifetime of "other_reference" ends here
+    }
+
+    let reference = &value; // lifetime of "reference" starts here
+
+    /* ... */
+
+    // lifetimes of "value", "other_value", "reference" ends here
+}
+```
+
+One of the reference rules is: "a reference cannot be invalid". That means a reference must
+always refered a variable that really exists (still accessible).
+
+For instance, the following code does not compile:
+
+```rust
+{
+    let value = 10;
+    let mut reference = &value; // lifetime of "reference" starts here
+
+    {
+        let other_value = 20; // lifetime of "other_value" starts here
+        reference = &other_value;
+
+        // lifetime of "other_value" ends here
+    }
+
+    // error: "reference" lifetime is longer than its refered value "other_value",
+    // calling "reference" from here makes no sense
+}
+```
+
+### The problem
+
+Let's take the following example:
+
+```rust
+fn get_reference(reference: &i32) -> &i32 {
+    reference
+}
+
+fn main() {
+
+    let value = 10;
+    let reference = get_reference(&value);
+}
+```
+
+This code compiles without any error.
+
+First, `get_reference` returns for sure a reference that has the same lifetime
+as the passed reference parameter.
+
+Why ? Because there is now way to return a reference to an object created within the function,
+as the object lifetime would be smaller than the returned reference lifetime.
+There is only one passed argument, so for sure, the returned reference can only be a reference
+to the same object, so with the same lifetime.
+
+Let's now consider the following code:
+
+```rust
+fn get_reference(
+    first: &i32,
+    second: &i32,
+) -> &i32
+{
+    if *first == 0 {
+        first
+    } else {
+        second
+    }
+}
+
+fn main() {
+
+    let first = 10;
+    let second = 20;
+
+    let reference = get_reference(
+        &first,
+        &second,
+    );
+}
+```
+
+The compilation of the code above fails and Rust requires us to indicate the lifetime
+of the returned reference.
+
+In fact, the returned reference will refer for sure to the first or the second parameter
+reference value. But at compilation time, there is absolutely no way to find out which one.
+In that case, Rust is not able to deduce the lifetime of `reference`.
+
+It may not seem to be a problem in the code above, but let's now check the code here:
+
+```rust
+let reference;
+
+let first = 10;
+
+{
+    let second = 20;
+
+    reference = get_reference(
+        &first,
+        &second,
+    );
+}
+
+println!("{}", reference); // error if "reference" refers to "second" !
+```
+
+### Reference lifetimes into functions declarations
+
+In order to use a lifetime, it is first mandatory to declare it.
+The simple way to do it when using it into a function is:
+
+```rust
+fn function_name<'a> {
+    ...
+```
+
+`'a` is a declared lifetime, that's all.
+
+In order to solve our problem above, we have to indicate that every lifetime of parameters
+passed to the function have to be the same, and the same as the returned reference.
+
+```rust
+fn get_reference<'a>(
+    first: &'a i32,
+    second: &'a i32,
+) -> &'a i32 {
+    ...
+}
+```
+
+Calling this function with the following code now works well:
+
+```rust
+let first = 10;
+let second = 20;
+
+let reference = get_reference(
+    &first,
+    &second,
+);
+```
+
+The two passed references must have the same lifetime,
+the returned reference also has the same lifetime,
+there is no risk of invalid reference.
+
+On the other hand, using the following client code won't work:
+
+```rust
+let first = 10;
+let reference;
+{
+    let second = 20;
+    reference = get_reference(
+        &first,
+        &second,
+    );
+}
+```
+
+In that case, Rust excepts `&first` and `&second` to have the same lifetime (`'a`)
+when calling the function `get_reference`, and this lifetime should be the same as `reference`
+(as the returned reference `&'a i32` also has the lifetime `'a`).
+
+In the case below, this is wrong: `second` goes out the scope when still borrowed by `reference`.
+The compilation fails.
+
+One solution would be to modify the function signature (note `'b` for the second param):
+
+```rust
+fn get_reference<'a, 'b>(
+    first: &'a i32,
+    second: &'b i32,
+) -> &'a i32
+{
+    ...
+}
+```
+
+This also fails because the function "might" return `second`. `second` has a `'b` lifetime
+and the returned reference has a `'a` lifetime, so this code cannot compile.
+
+References explicit lifetimes are not a kind of syntax rule to respect but more "an additional
+information to add to the code in order to ensure that you know what you are doing".
