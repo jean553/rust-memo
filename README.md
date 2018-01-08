@@ -888,3 +888,6 @@ let list = List::Next(
     )
 );
 ```
+
+A Box<T> variable is moved by default.
+It is clonable only if the T type is clonable (implements `Clone`).
