@@ -52,6 +52,7 @@ cargo run
     * [`Box<T>` stores the data on the heap](#box<t>-stores-the-data-on-the-heap)
     * [`Deref`](#deref)
     * [`Drop`](#drop)
+    * [`Rc`](#rc)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -959,5 +960,28 @@ impl Drop for MyStruct {
 {
     let object = MyStruct { param: 10 };
     // print destructor
+}
+```
+
+### `Rc`
+
+Rc means "Reference counting".
+
+Rc is used when data is allocated on the heap and this data must be accessible
+from many different parts of the program. We cannot determine at the compilation
+time where the data will become useless at last.
+
+```rust
+use std::rc::Rc;
+
+fn main() {
+
+    let first = Rc::new(10);
+    println!("{}", Rc::strong_count(&first)); // 1
+
+    let second = first.clone();
+    println!("{}", Rc::strong_count(&first)); // 2
+
+    println!("{}", *first);
 }
 ```
