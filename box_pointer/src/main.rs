@@ -19,6 +19,12 @@ struct MyStructure {
     second: bool,
 }
 
+#[derive(Clone)]
+struct MyOtherStructure {
+    first: u8,
+    second: u8,
+}
+
 fn main() {
 
     /* 10 is allocated on the heap;
@@ -55,4 +61,27 @@ fn main() {
             )
         )
     );
+
+    /* a Box<T> is moved by default */
+    let first = Box::new(
+        MyStructure {
+            first: 100,
+            second: false,
+        }
+    );
+    let second = first;
+    println!("{}", second.first);
+    //println!("{}", first.first);
+
+    /* a Box<T> can be copied only
+       if the boxed structure implements Clone */
+    let first = Box::new(
+        MyOtherStructure {
+            first: 10,
+            second: 20,
+        }
+    );
+    let second = first.clone();
+    println!("{}", first.first);
+    println!("{}", second.first);
 }
