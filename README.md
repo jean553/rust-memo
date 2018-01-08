@@ -50,6 +50,7 @@ cargo run
 - [Closures](#closures)
 - [Smart pointers](#smart-pointers)
     * [`Box<T>` stores the data on the heap](#box<t>-stores-the-data-on-the-heap)
+    * [Deref](#deref)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -891,3 +892,48 @@ let list = List::Next(
 
 A Box<T> variable is moved by default.
 It is clonable only if the T type is clonable (implements `Clone`).
+
+### `Deref`
+(check the `deref` project)
+
+Used to define what happens on type variable dereferencing.
+
+```rust
+use std::ops::Deref;
+
+struct MyStructure<T> {
+    param: T,
+}
+
+impl<T> MyStructure<T> {
+
+    pub fn new(param: T) -> MyStructure<T> {
+        MyStructure {
+            param: param,
+        }
+    }
+}
+
+impl<T> Deref for MyStructure<T> {
+    type Target: T; // the targetted type must be specified into Target
+
+    fn deref(&self) -> &T {
+        &self.param
+    }
+}
+
+let variable = MyStructure::new(10);
+println!("{}", *variable);
+```
+
+`Deref` can be used for "deref coercion".
+
+```rust
+fn display_digit(digit: &u8) {
+    println!("{}", digit);
+}
+
+let value: u8 = 10;
+let object = MyStructure::new(value);
+display_digit(&object); // displays 10
+```
