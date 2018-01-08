@@ -50,7 +50,8 @@ cargo run
 - [Closures](#closures)
 - [Smart pointers](#smart-pointers)
     * [`Box<T>` stores the data on the heap](#box<t>-stores-the-data-on-the-heap)
-    * [Deref](#deref)
+    * [`Deref`](#deref)
+    * [`Drop`](#drop)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -936,4 +937,27 @@ fn display_digit(digit: &u8) {
 let value: u8 = 10;
 let object = MyStructure::new(value);
 display_digit(&object); // displays 10
+```
+
+### `Drop`
+(check the `drop` project)
+
+Defines what happens when a variable goes out of the scope:
+
+```rust
+struct MyStruct {
+    param: u8,
+}
+
+impl Drop for MyStruct {
+
+    fn drop(&mut self) {
+        println!("Destructor called !");
+    }
+}
+
+{
+    let object = MyStruct { param: 10 };
+    // print destructor
+}
 ```
