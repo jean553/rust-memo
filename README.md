@@ -48,6 +48,8 @@ cargo run
     * [Generic types with enumerations](#generic-types-with-enumerations)
 - [Trait bounds](#trait-bounds)
 - [Closures](#closures)
+- [Smart pointers](#smart-pointers)
+    * [`Box<T>` stores the data on the heap](#box<t>-stores-the-data-on-the-heap)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -825,3 +827,64 @@ object.function(); // function() is callable as T implements Clone
 
 ## Closures
 (check the `closures` project)
+
+## Smart pointers
+
+### `Box<T>` stores data on the heap
+(check the `box_pointer` project)
+
+`Box` is a variable on the stack that points
+to an object on the heap.
+
+```rust
+let object = Box::new(10);
+println!("{}", object);
+```
+
+`Box` are useful to store "recursive types" values
+(value that has an attribute that is the same type of itself,
+this is a kind of nested objects list).
+
+In fact, the following code cannot compile as Rust cannot determine
+the size of the structure at compilation time (the size is infinite):
+
+```rust
+struct RecursiveStructure {
+    next: RecursiveStructure,
+    value: u8,
+}
+```
+
+Instead, the `Box` pointer has a fixed size, as it contains some meta-data
+and a "link" to the heap data (but not the heap data itself).
+The following code is the solution:
+
+```rust
+struct RecursiveStructure {
+    next: Box<RecursiveStructure>,
+    value: u8,
+}
+```
+
+A known creation-way of the recursive linked list is
+the usage of a "cons list" (use an enumeration).
+
+```rust
+enum List {
+    Next(
+        u8,
+        Box<Next>,
+    ),
+    End,
+}
+
+let list = List::Next(
+    10,
+    Box::new(
+        List::Next(
+            20,
+            Box::new(List::End),
+        )
+    )
+);
+```
