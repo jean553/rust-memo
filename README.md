@@ -53,6 +53,7 @@ cargo run
     * [`Deref`](#deref)
     * [`Drop`](#drop)
     * [`Rc`](#rc)
+- [Threads](#threads)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -983,5 +984,84 @@ fn main() {
     println!("{}", Rc::strong_count(&first)); // 2
 
     println!("{}", *first);
+}
+```
+
+## Threads
+
+Threads implementation by a language is known as M:N model.
+M represents the amount of "language-provided" threads (also known as "green" threads),
+N represents the amount of OS threads.
+There are M green threads N OS threads. In other words, if the OS provides an API
+to a program and allows him to use 5 threads, and this program wants to start 10 threads,
+then there is 10 green threads (process threads) that can use 5 OS threads.
+
+To start a new thread:
+
+```rust
+use std::thread;
+
+fn main() {
+
+    let thread = thread::spawn( || {
+        for i in 0..100 {
+            println!("{}", i);
+        }
+    });
+
+    /* some other stuffs into the main thread */
+
+    thread.join(); // wait for "thread" to be finished
+
+    /* the thread "thread" is finished for sure */
+}
+```
+
+The thread::spawn closure does not take any parameter:
+0 parameters are expected. In fact, the closure is "required"
+to capture the variables it needs from the current function. 
+
+The closure "infers" the variable it needs from the current function:
+it mays take a reference or a mutable reference.
+
+In the example above, the compilation fails because by using a reference to "value"
+into the thread, there is no guarantee that "value" will be invalid before
+the thread execution terminates (as we can clearly see in the example):
+
+```rust
+let mut thread;
+
+{
+    let value = 10;
+
+    /* the closure only needs a reference to "value",
+       so it simply borrows it */
+    thread = thread::spawn( || {
+        println!("{}", value);
+    });
+}
+
+/* "value" does not exist anymore but "thread" might still running,
+   so the borrowed reference of "value" inside "thread" is now invalid */
+```
+
+The solution is to force move semantics when passing current function variables
+into the thread function. The ownership is transferred from the current function
+variable to the thread variable.
+
+```rust
+let mut thread;
+
+{
+    let value = 10;
+
+    /* ownership of the "value" variable is now owned by the thread */
+    thread = thread::spawn( move || {
+        println!("{}", value);
+    });
+
+    /* "value" is not callable/usuable here anymore, so nothing bad
+       that would affect the thread execution can happen to "value";
+       thank you soooo much Rust */
 }
 ```
