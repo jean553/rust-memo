@@ -54,6 +54,7 @@ cargo run
     * [`Drop`](#drop)
     * [`Rc`](#rc)
 - [Threads](#threads)
+- [Messaging](#messaging)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1064,4 +1065,17 @@ let mut thread;
        that would affect the thread execution can happen to "value";
        thank you soooo much Rust */
 }
+```
+
+## Messaging
+(check the `messaging` project)
+
+`mpsc` (multiple producers single consumers) are used to exchange messages
+between threads.
+
+```rust
+let (
+    producer,
+    consumer,
+) = mpsc::channel();
 ```
