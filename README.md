@@ -55,6 +55,7 @@ cargo run
     * [`Rc`](#rc)
 - [Threads](#threads)
 - [Messaging](#messaging)
+- [Mutex](#mutex)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1078,4 +1079,50 @@ let (
     producer,
     consumer,
 ) = mpsc::channel();
+```
+
+## Mutex
+(check the `mutex` project)
+
+Mutex = "Mutual Exclusion"
+
+```rust
+let mut value = 20;
+let mutex = Mutex::new(value);
+
+{
+    let first_lock = mutex.lock().unwrap();
+
+    // "value" can only be accessed through "first_lock"
+    // and cannot be locked anymore until "first_lock" is not released
+
+    // "first_lock" is destroyed
+}
+
+let second_lock = mutex.lock().unwrap();
+```
+
+It is required to use an Atomic Reference Counter to pass the mutex to multiple threads.
+In fact, we want to have pointer to it but we want to ensure that the mutex
+is accessed through an atomic way (when passed to multiple threads).
+
+```rust
+let value = 10;
+let mutex = Mutex::new(value);
+let mutex_arc = Arc::new(mutex);
+
+// clone the Arc before passing it to the thread
+let mutex_arc_clone = mutex_arc.clone();
+
+let thread = thread::spawn(move || {
+    let value = mutex_arc_clone.lock().unwrap();
+    println!("{}", value);
+});
+
+{
+    let value = mutex_arc.lock().unwrap();
+    println!("{}", value);
+}
+
+thread.join();
 ```
