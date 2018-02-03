@@ -56,6 +56,7 @@ cargo run
 - [Threads](#threads)
 - [Messaging](#messaging)
 - [Mutex](#mutex)
+- [Macros](#macros)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1125,4 +1126,27 @@ let thread = thread::spawn(move || {
 }
 
 thread.join();
+```
+
+## Macros
+Check the project `macros`.
+
+Group identical "patterns" of code, in order to be reused.
+Macros allow metaprogramming.
+
+Advantages:
+ * prevent repetitions of code ("expand" a macro is better than copy/past the same code),
+ * custom/specify similar macros with different patterns,
+ * provide a variadic interface
+ * repetition can be applied to multiple parameters (vec!)
+
+Using a macro that has not be defined in the current module
+requires to use the `#[macro_use(my_macro)]` attribute.
+Using `#[macro_use]` loads all the macro.
+
+In the example below, any macro of `my_crate` can be used into the current module and `my_module`.
+
+```rust
+#[macro_use] extern crate my_crate;
+mod my_module;
 ```
