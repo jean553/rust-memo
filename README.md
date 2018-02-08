@@ -57,6 +57,8 @@ cargo run
 - [Messaging](#messaging)
 - [Mutex](#mutex)
 - [Macros](#macros)
+- [`Cell` and `RefCell`](#cell-and-refcell)
+    * [Hide object mutability under the wood](#hide-object-mutability-under-the-wood)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1149,4 +1151,27 @@ In the example below, any macro of `my_crate` can be used into the current modul
 ```rust
 #[macro_use] extern crate my_crate;
 mod my_module;
+```
+
+## `Cell` and `RefCell`
+
+Provides "interior mutability" (different from other Rust types that provide "inherited mutability").
+Cell<T> provides interior mutability by moving in and moving out values from Cell<T> object.
+In order to do the same with references, RefCell<T> must be used, as it integrates lock feature
+before moving in or moving out.
+
+"inherited mutability" must always be preferred to "interior mutability". Interior mutability is a kind of last resort solution, and can be used to make mutable wrapped values that are supposed to be immutable.
+
+### Hide object mutability under the wood
+
+```rust
+/* the "value" type is u8, modification is not allowed */
+pub fn update(&self) {
+    self.value = 20; // failure
+}
+
+/* the "value" type is RefCell<u8>, modification is allowed */
+pub fn update(&self) {
+    *self.value.borrow_mut() = 500; // works
+}
 ```
