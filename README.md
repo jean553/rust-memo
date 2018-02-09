@@ -1162,6 +1162,22 @@ before moving in or moving out.
 
 "inherited mutability" must always be preferred to "interior mutability". Interior mutability is a kind of last resort solution, and can be used to make mutable wrapped values that are supposed to be immutable.
 
+`RefCell<T>` allows to mutate data even when there are immutable references to that data.
+To do so, `RefCell<T>` calls unsafe code on the wrapped variable.
+
+### `RefCell<T>` vs `Box<T>`, `Rc<T>`
+
+The Rust borrowing rules are:
+ * one mutable reference OR many immutable references
+ * the reference must always be valid
+
+With `Box<T>`, `Rc<T>` and references, these rules are **enforced at compile time**.
+With `RefCell<T>`, these rules are **enforced at running time** (panic! if rules are broken).
+
+ * `Rc<T>` has multiple owner of the same data (multiple `Rc<T>` refers to the same data),
+`Box<T>` and `RefCell<T>` can only have one owner to the data (only one `Box<T>` or only one `RefCell<T>` can refer to some data at a time),
+ * Content of a `Box<T>` can be modified (mutable borrow), check is done at compilation time; Content of `Rc<T>` cannot be modified (immutable borrow), check is done at compilation time; `RefCell<T>` content can be modified, check is done at running time.
+
 ### Hide object mutability under the wood
 
 ```rust
