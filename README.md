@@ -58,6 +58,7 @@ cargo run
 - [Mutex](#mutex)
 - [Macros](#macros)
 - [`Cell` and `RefCell`](#cell-and-refcell)
+    * [Check borrowing rules at runtime](#check-borrowing-rules-at-runtime)
     * [Hide object mutability under the wood](#hide-object-mutability-under-the-wood)
 
 ## Variables and mutability
