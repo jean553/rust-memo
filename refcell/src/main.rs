@@ -38,4 +38,17 @@ fn main() {
     };
     mutable_structure.try_update();
     println!("{}", mutable_structure.value.borrow()); // 20
+
+    /* with normal references, the multiple immutable references check is done at compile time */
+
+    let mut value: u8 = 20;
+    let first_immutable_reference = &mut value;
+    // compilation fails: let second_immutable_reference = &mut value;
+    
+    /* with RefCell<T>, the multiple immutable references check is done at execution time */
+
+    let mut value: RefCell<u8> = RefCell::new(10);
+
+    let mut first_immutable_reference: std::cell::RefMut<u8> = value.borrow_mut();
+    // execution fails: let mut second_immutable_reference: std::cell::RefMut<u8> = value.borrow_mut();
 }
