@@ -1,4 +1,8 @@
-use std::cell::RefCell;
+use std::cell::{
+    RefCell,
+    RefMut,
+};
+use std::rc::Rc;
 
 struct StructureWithoutRefCell {
     value: u8,
@@ -51,4 +55,16 @@ fn main() {
 
     let mut first_immutable_reference: std::cell::RefMut<u8> = value.borrow_mut();
     // execution fails: let mut second_immutable_reference: std::cell::RefMut<u8> = value.borrow_mut();
+
+    /* using RefCell<T> with Rc<T> in order to modify the wrapped content */
+
+    let mut value = Rc::new(10);
+    //compilation error: *value = 20; (cannot borrow as mutable)
+
+    let mut value = Rc::new(RefCell::new(10));
+    {
+        let mut reference: RefMut<u8> = value.borrow_mut();
+        *reference = 20;
+    }
+    println!("{}", *value.borrow());
 }
