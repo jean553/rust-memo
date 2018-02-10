@@ -60,6 +60,7 @@ cargo run
 - [`Cell` and `RefCell`](#cell-and-refcell)
     * [Check borrowing rules at runtime](#check-borrowing-rules-at-runtime)
     * [Hide object mutability under the wood](#hide-object-mutability-under-the-wood)
+    * [Modify Rc<T> content](#modify-rc<t>-content)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1200,4 +1201,21 @@ pub fn update(&self) {
 pub fn update(&self) {
     *self.value.borrow_mut() = 500; // works
 }
+```
+
+### Modify Rc<T> content
+
+Rc<T> can have multiple owners to the same data (references counter pointer).
+Each Rc<T> copy provides the wrapped data, but this data remains immutable.
+If the wrapped content is a RefCell<T>, then it is possible to make the content mutable.
+
+```rust
+let mut value = Rc::new(RefCell::new(10));
+
+{
+    let mut first_reference = *value.borrow_mut();
+    first_reference = 20;
+}
+
+println!("{}", *value.borrow()); // 20
 ```
