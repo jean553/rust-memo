@@ -1178,6 +1178,15 @@ With `RefCell<T>`, these rules are **enforced at running time** (panic! if rules
 `Box<T>` and `RefCell<T>` can only have one owner to the data (only one `Box<T>` or only one `RefCell<T>` can refer to some data at a time),
  * Content of a `Box<T>` can be modified (mutable borrow), check is done at compilation time; Content of `Rc<T>` cannot be modified (immutable borrow), check is done at compilation time; `RefCell<T>` content can be modified, check is done at running time.
 
+### Check borrowing rules at runtime
+
+```rust
+let mut value: RefCell<u8> = RefCell::new(10);
+
+let mut first_immutable_reference: RefMut<u8> = value.borrow_mut();
+let mut second_immutable_reference: RefMut<u8> = value.borrow_mut(); // panic! at execution time
+```
+
 ### Hide object mutability under the wood
 
 ```rust
