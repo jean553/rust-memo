@@ -61,6 +61,7 @@ cargo run
     * [Check borrowing rules at runtime](#check-borrowing-rules-at-runtime)
     * [Hide object mutability under the wood](#hide-object-mutability-under-the-wood)
     * [Modify Rc<T> content](#modify-rc<t>-content)
+- [std::mem::replace](#std::mem::replace)
 
 ## Variables and mutability
 Check the project `variables_and_mutability`.
@@ -1218,4 +1219,42 @@ let mut value = Rc::new(RefCell::new(10));
 }
 
 println!("{}", *value.borrow()); // 20
+```
+
+## `std::mem::replace`
+Check the project `replace`.
+
+`std::mem::replace` is used to replace a non-clonable object by another one.
+The previous object is then moved out and available for future usage.
+
+For example:
+
+```rust
+struct MyStructure {
+    array: Vec<u8>,
+}
+
+impl MyStructure {
+
+    pub fn move_out(&self) -> Vec<u8> {
+        self.array // fail, `array` cannot be moved out, clone is required or & is required
+    }
+}
+```
+
+In the example above, the only way to get `self.array` is to clone it or to return a reference to it.
+
+Moving it out can be handled by using `std::mem::replace`:
+
+```rust
+use std::mem;
+
+/* some code */
+
+pub fn move_out(&mut self) -> Vec<u8> {
+    mem::replace(
+        &mut self.array,
+        vec![1, 2],
+    )
+}
 ```
